@@ -36,7 +36,7 @@ moz_getURL () { # $1: URL
 moz_waitURL () {  # $1: URL
     while ! moz_cmd "repl.print(content.location.href)" | grep "$1"
     do
-        echo "WAIT URI: $1"
+        echo "WAIT URI: $1" >&2
         sleep 1
     done
     sleep 1
@@ -143,7 +143,7 @@ EOF
 moz_waitTitle () {  # $1: URL
     while ! moz_cmd "repl.print( document.title )" | tail -n 2 | grep "$1"
     do
-        echo "WAIT Title: $1"
+        echo "WAIT Title: $1" >&2
         sleep 1
     done
     sleep 1
