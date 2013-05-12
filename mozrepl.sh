@@ -1,6 +1,8 @@
 ## mozrepl.sh
 ## 2012/08/14
 
+## Original found at http://philippe.cassignol.pagesperso-orange.fr/2012/mozrepl.sh
+
 moz_cmd () { # $1: commande javascript
 expect <<EOF
     spawn  nc localhost 4242
