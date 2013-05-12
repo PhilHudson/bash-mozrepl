@@ -1,7 +1,13 @@
 ## mozrepl.sh
 ## 2012/08/14
 
-## Original found at http://philippe.cassignol.pagesperso-orange.fr/2012/mozrepl.sh
+## Source this (don't call it) to provide bash with a suite of functions for
+## driving the MozREPL extension.
+
+## Original found at:
+## http://philippe.cassignol.pagesperso-orange.fr/2012/mozrepl.sh
+
+## Short French-English lexicon at end
 
 moz_cmd () { # $1: commande javascript
 expect <<EOF
@@ -231,3 +237,16 @@ EOF
 # moz_setTextArea "adresse" "Marcel Pagnol\nMarseille"
 
 # moz_setInput "identifiant" "Marcel"
+
+
+## Lexicon
+
+# fichier    : file
+# nom        : name (or key)
+# valeur     : value
+# commande   : command
+# d'un       : of a(n)
+# texte      : text
+# lien       : link
+# du         : of the
+# formulaire : of the/a form
