@@ -78,14 +78,13 @@ moz_findLinks () { # $1: texte du lien
     local FIND_LINKS="`moz__mktemp findLinks`"
     (( ${moz__DEBUG:-0} )) && echo "FIND_LINKS: $FIND_LINKS" >&2
 cat > "$FIND_LINKS" <<EOF
-
-    var exp = new RegExp("$1");
+    var exp = new RegExp( "$1" );
 
     for ( var i=0; i<document.links.length; i++ ) {
-        if ( exp.test( document.links[i].text ) )     // repl.print(content.location.href)"
+        if ( exp.test( document.links[i].text ) ) {    // repl.print(content.location.href)"
             repl.print( document.links[i].href );
+        }
     }
-
 EOF
     (( ${moz__DEBUG:-0} )) && echo Wrote file >& 2
     moz_script "file://${FIND_LINKS}" | sed '/^file|^http/ s/\r//g'
@@ -95,16 +94,15 @@ EOF
 moz_setInput () { # $1: nom  $2: valeur
     local SET_INPUT="`moz__mktemp setInput`"
 cat > "$SET_INPUT" <<EOF
-
     var c = this.document.getElementsByTagName("input");  // [object HTMLCollection]
                                                           // [object HTMLInputElement] .type=text .name=q .value=Shakira
     for ( var i=0; i<c.length; i++ ) {
-        if ( c[i].type == "text" || c[i].type == "password" )
+        if ( c[i].type == "text" || c[i].type == "password" ) {
             if ( c[i].name == "$1") {
                 c[i].value = "$2";
             }
+        }
     }
-
 EOF
     moz_script "file://${SET_INPUT}"
 }
@@ -113,12 +111,12 @@ EOF
 moz_submitFormByName () { # $1: nom formulaire
     local SUBMIT_FORM="`moz__mktemp submitForm`"
 cat > "$SUBMIT_FORM" <<EOF
-
     var c = this.document.getElementsByTagName("form");
 
     for ( var i=0; i<c.length; i++ ) {
-        if ( c[i].name == "$1" )
+        if ( c[i].name == "$1" ) {
             c[i].submit();
+        }
     }
 EOF
     moz_script "file://${SUBMIT_FORM}"
@@ -128,13 +126,13 @@ EOF
 moz_setTextArea () { # $1: nom  $2: valeur
     local SET_TEXT_AREA="`moz__mktemp setTextArea`"
 cat > "$SET_TEXT_AREA" <<EOF
-
     var c = this.document.getElementsByTagName("textarea");  // [object HTMLCollection]
                                                              // [object HTMLTextAreaElement] type name value
-    for ( var i=0; i<c.length; i++ )
-        if ( c[i].name == "$1")
+    for ( var i=0; i<c.length; i++ ) {
+        if ( c[i].name == "$1") {
             c[i].value = "$2";
-
+        }
+    }
 EOF
     moz_script "file://${SET_TEXT_AREA}"
 }
@@ -143,13 +141,13 @@ EOF
 moz_setSelect () { # $1: nom $2: valeur
     local SET_SELECT="`moz__mktemp setSelect`"
 cat > "$SET_SELECT" <<EOF
-
     var c = this.document.getElementsByTagName("select");  // [object HTMLCollection]
                                                            // [object HTMLSelectElement]
-    for ( var i=0; i<c.length; i++ )
-        if ( c[i].name == "$1")
+    for ( var i=0; i<c.length; i++ ) {
+        if ( c[i].name == "$1") {
             c[i].value = "$2";
-
+        }
+    }
 EOF
     moz_script "file://${SET_SELECT}"
 }
@@ -158,14 +156,12 @@ EOF
 moz_setInputRadio () { # $1: nom $2: valeur
     local SET_INPUT_RADIO="`moz__mktemp setInputRadio`"
 cat > "$SET_INPUT_RADIO" <<EOF
-
     var c = this.document.getElementsByTagName("input");  // [object HTMLCollection]
 
     for ( var i=0; i<c.length; i++ ) {                    // [object HTMLInputElement]
-
-         if (  c[i].type == "radio" && c[i].name == "$1" && c[i].value == "$2" )
-              c[i].checked = true;
-
+        if ( c[i].type == "radio" && c[i].name == "$1" && c[i].value == "$2" ) {
+            c[i].checked = true;
+        }
     }
 EOF
     moz_script "file://${SET_INPUT_RADIO}"
@@ -185,10 +181,9 @@ moz_waitTitle () {  # $1: URL
 moz_listSelectValues () { # $1: nom
     local LIST_SELECT_VALUES="`moz__mktemp listSelectValues`"
 cat > "$LIST_SELECT_VALUES" <<EOF
-
     var c = this.document.getElementsByTagName("select");  // [object HTMLCollection]
                                                            // [object HTMLSelectElement]
-    for ( var i=0; i<c.length; i++ )
+    for ( var i=0; i<c.length; i++ ) {
         if ( c[i].name == "$1") {
             c = c[i].options;                              // [object HTMLCollection]
 
@@ -197,7 +192,7 @@ cat > "$LIST_SELECT_VALUES" <<EOF
             }
             break;
         }
-
+    }
 EOF
     moz_script "file://${LIST_SELECT_VALUES}" | \
     sed '/^VALUE\s+/ s/^VALUE\t//; s/\r//g; /^\s*$/d'
@@ -207,16 +202,15 @@ EOF
 moz_getInput () { # $1: nom
     local GET_INPUT="`moz__mktemp getInput`"
 cat > "$GET_INPUT" <<EOF
-
     var c = this.document.getElementsByTagName("input");  // [object HTMLCollection]
                                                           // [object HTMLInputElement] .type=text .name=q .value=Shakira
     for ( var i=0; i<c.length; i++ ) {
-
-        if ( c[i].type == "text" || c[i].type == "password" || c[i].type == "hidden" )
-            if ( c[i].name == "$1")
+        if ( c[i].type == "text" || c[i].type == "password" || c[i].type == "hidden" ) {
+            if ( c[i].name == "$1") {
                 repl.print( "VALUE\t" + c[i].value );
+            }
+        }
     }
-
 EOF
     moz_script "file://${GET_INPUT}" | \
     sed '/^VALUE\s+/ s/^VALUE\t//; s/\r//g; /^\s*$/d'
@@ -226,14 +220,12 @@ EOF
 moz_setInputCheckbox () { # $1: nom $2: valeur
     local SET_INPUT_CHECKBOX="`moz__mktemp setInputCheckbox`"
 cat > "$SET_INPUT_CHECKBOX" <<EOF
-
     var c = this.document.getElementsByTagName("input");  // [object HTMLCollection]
 
     for ( var i=0; i<c.length; i++ ) {                    // [object HTMLInputElement]
-
-         if (  c[i].type == "checkbox" && c[i].name == "$1" )
-              c[i].checked = $2;
-
+        if ( c[i].type == "checkbox" && c[i].name == "$1" ) {
+            c[i].checked = $2;
+        }
     }
 EOF
     moz_script "file://${SET_INPUT_CHECKBOX}"
