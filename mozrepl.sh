@@ -40,24 +40,29 @@ moz__mktemp () { # $1: template
     esac
 }
 
+
 moz_cmd () { # $1: commande javascript
-expect <<EOF
+(expect <<EOF
+    log_user 0
     spawn  nc localhost 4242
-    expect "repl>"; send "$*\r"
+    expect "repl>"; log_user 1; send "$*\r"
     expect "repl>"; send "repl.quit()\r"
 EOF
+) | sed "/^${*}\r\$/d; \$d"
 }
 
 
 moz_script () { # $1: URL d'un fichier javascript
-expect <<EOF
+(expect <<EOF
     log_user 0
     spawn  nc localhost 4242
     expect "repl>"; send "repl.enter(content)\r"
     expect "repl>"; log_user 1; send "repl.load(\"$1\")\r"
     expect "repl>"; send "repl.quit()\r"
 EOF
+) | sed "/repl\.load(\".\+\")\r\$/d; \$d"
 }
+
 
 moz_getURL () { # $1: URL
     moz_cmd "content.location.href = '$1'"
@@ -81,7 +86,7 @@ cat > "$FIND_LINKS" <<EOF
     var exp = new RegExp( "$1" );
 
     for ( var i=0; i<document.links.length; i++ ) {
-        if ( exp.test( document.links[i].text ) ) {    // repl.print(content.location.href)"
+        if ( exp.test( document.links[i].text ) ) {
             repl.print( document.links[i].href );
         }
     }
@@ -98,7 +103,7 @@ cat > "$SET_INPUT" <<EOF
                                                           // [object HTMLInputElement] .type=text .name=q .value=Shakira
     for ( var i=0; i<c.length; i++ ) {
         if ( c[i].type == "text" || c[i].type == "password" ) {
-            if ( c[i].name == "$1") {
+            if ( c[i].name == "$1" ) {
                 c[i].value = "$2";
             }
         }
@@ -129,7 +134,7 @@ cat > "$SET_TEXT_AREA" <<EOF
     var c = this.document.getElementsByTagName("textarea");  // [object HTMLCollection]
                                                              // [object HTMLTextAreaElement] type name value
     for ( var i=0; i<c.length; i++ ) {
-        if ( c[i].name == "$1") {
+        if ( c[i].name == "$1" ) {
             c[i].value = "$2";
         }
     }
@@ -144,7 +149,7 @@ cat > "$SET_SELECT" <<EOF
     var c = this.document.getElementsByTagName("select");  // [object HTMLCollection]
                                                            // [object HTMLSelectElement]
     for ( var i=0; i<c.length; i++ ) {
-        if ( c[i].name == "$1") {
+        if ( c[i].name == "$1" ) {
             c[i].value = "$2";
         }
     }
@@ -184,7 +189,7 @@ cat > "$LIST_SELECT_VALUES" <<EOF
     var c = this.document.getElementsByTagName("select");  // [object HTMLCollection]
                                                            // [object HTMLSelectElement]
     for ( var i=0; i<c.length; i++ ) {
-        if ( c[i].name == "$1") {
+        if ( c[i].name == "$1" ) {
             c = c[i].options;                              // [object HTMLCollection]
 
             for ( var i=0; i<c.length; i++ ) {             // [object HTMLOptionElement]
@@ -206,7 +211,7 @@ cat > "$GET_INPUT" <<EOF
                                                           // [object HTMLInputElement] .type=text .name=q .value=Shakira
     for ( var i=0; i<c.length; i++ ) {
         if ( c[i].type == "text" || c[i].type == "password" || c[i].type == "hidden" ) {
-            if ( c[i].name == "$1") {
+            if ( c[i].name == "$1" ) {
                 repl.print( "VALUE\t" + c[i].value );
             }
         }
