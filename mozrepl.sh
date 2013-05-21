@@ -1,5 +1,7 @@
 ## mozrepl.sh
-## 2012/08/14
+## Created: 2012/08/14
+## Time-stamp: "2013-05-21 14:42:24 phil"
+
 
 ## Source this (don't call it) to provide bash with a suite of functions for
 ## driving the MozREPL extension.
@@ -9,6 +11,11 @@
 
 ## Short French-English lexicon at end
 
+
+# Host on which the target MozREPL is running; default: localhost
+moz_HOST=localhost
+# Port on which the target MozREPL is listening; default: 4242
+moz_PORT=4242
 
 # Enable (1) or disable (0) diagnostic output
 moz__DEBUG=0
@@ -44,7 +51,7 @@ moz__mktemp () { # $1: template
 moz_cmd () { # $1: commande javascript
 (expect <<EOF
     log_user 0
-    spawn  nc localhost 4242
+    spawn  nc ${moz_HOST:-localhost} ${moz_PORT:-4242}
     expect "repl>"; log_user 1; send "$*\r"
     expect "repl>"; send "repl.quit()\r"
 EOF
@@ -55,7 +62,7 @@ EOF
 moz_script () { # $1: URL d'un fichier javascript
 (expect <<EOF
     log_user 0
-    spawn  nc localhost 4242
+    spawn  nc ${moz_HOST:-localhost} ${moz_PORT:-4242}
     expect "repl>"; send "repl.enter(content)\r"
     expect "repl>"; log_user 1; send "repl.load(\"$1\")\r"
     expect "repl>"; send "repl.quit()\r"
